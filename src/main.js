@@ -13,10 +13,10 @@ app.use(express.json())
 
 app.listen(8000);
 
-// sequelize.sync({ force: false })
-//     .then(() => {
-//         console.log("DB Connect");
-//     })
-//     .catch((err) => {
-//         console.error(err);
-//     })
+sequelize.sync({ force: false })
+    .then(() => {
+        console.log("DB Connect");
+    })
+    .catch((err) => {
+        console.error(err);
+    })
