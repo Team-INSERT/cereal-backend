@@ -19,5 +19,5 @@ module.exports = (sequelize, DataTypes) => {
             sourceKey: 'code'
         });
     };
-    return Board;
+    return chatting;
 }
