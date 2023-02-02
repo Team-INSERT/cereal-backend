@@ -23,5 +23,6 @@
 		"sequelize-cli": "^6.5.2",
 		"socket.io": "^4.5.4",
 		"yarn": "^1.22.19"
-	}
+	},
+	"packageManager": "yarn@3.4.1"
 }
