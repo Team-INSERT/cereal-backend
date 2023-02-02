@@ -16,7 +16,7 @@ const server = http.createServer(app)
 const io = new Server(server, {
 	cors: {
 		origin: '*',
-		methods: ['GET', 'POST'],
+		credentials: true,
 	},
 })
 
@@ -30,27 +30,19 @@ app.use(cookieParser())
 // 	next(new NotFoundException())
 // })
 
-sequelize
-	.sync({ force: false })
-	.then(() => {
-		console.log('DB Connect')
-	})
-	.catch((err) => {
-		console.error(err)
-	})
+try {
+	sequelize.sync({ force: false })
+	console.log('DB Connect')
+} catch (err) {
+	console.error(err)
+}
 
 io.on('connection', (socket) => {
-	console.log('New client connected')
-
-	socket.on('disconnect', () => console.log('user disconnect', socket.id))
-
-	socket.on('good', (data) => {
-		console.log(data) // 클라이언트 -> 서버
+	socket.on('message', ({ name, message }) => {
+		io.emit('message', { name, message })
+		console.log(name, message)
 	})
-
-	setInterval(() => {
-		socket.emit('hi', '서버 -> 클라이언트')
-	}, 3000)
 })
 
+io.listen(8000)
 app.listen(8081)
