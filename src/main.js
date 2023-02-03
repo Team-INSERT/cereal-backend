@@ -40,7 +40,6 @@ io.on('connection', (socket) => {
 
 	socket.on('join', function (data) {
 		socket.join(data)
-		io.to(data).emit('welcome')
 	})
 
 	socket.on('disconnect', () => {
@@ -50,6 +49,8 @@ io.on('connection', (socket) => {
 	socket.on('error', (error) => {
 		console.error(error)
 	})
+
+	socket.emit('count', io.engine.clientsCount)
 
 	socket.on('message', (data) => {
 		const date = new Date()
