@@ -67,6 +67,20 @@ io.on('connection', (socket) => {
 		}
 	})
 
+	socket.on('disconnecting', () => {
+		const date = new Date()
+		date.setHours(date.getHours() + 9)
+		for (const room of socket.rooms) {
+			if (room !== socket.id) {
+				socket.to(room).emit('logoff', {
+					socketId: socket.id,
+					message: "상대방이 연결을 종료하였습니다",
+					date: date,
+				})
+			}
+		}
+	})
+
 	socket.on('disconnect', () => {
 		console.log(`client disconnected ip ${ip}, socket id : ${socket.id}, date : ${new Date()}`)
 	})
