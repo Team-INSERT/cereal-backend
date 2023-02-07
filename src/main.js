@@ -49,14 +49,19 @@ io.on('connection', (socket) => {
 			socket.join(waitingRoom)
 			socket.emit('join',{
 				roomId: waitingRoom,
+				wait: true
 			})
 		}
 		else {
 			socket.join(waitingRoom)
 			socket.emit('join',{
 				roomId: waitingRoom,
+				wait: true
 			})
 			waitingRoom = null
+			socket.to(waitingRoom).emit('join',{
+				start: true
+			})
 		}
 
 	})
