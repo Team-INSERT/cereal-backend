@@ -51,14 +51,19 @@ io.on('connection', (socket) => {
 			})
 		} else {
 			socket.join(waitingRoom)
-			socket.emit('join', {
-				wait: true,
-			})
-			io.to(waitingRoom).emit('join', {
-				roomId: waitingRoom,
-				start: true,
-			})
-			waitingRoom = null
+			if(io.sockets.adapter.rooms.get(waitingRoom).size === 1){
+				socket.emit('join', {
+					wait: true,
+				})
+			}else{
+				io.to(waitingRoom).emit('join', {
+					roomId: waitingRoom,
+					start: true,
+				})
+				waitingRoom = null
+			}
+
+
 		}
 	})
 
