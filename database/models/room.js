@@ -1,10 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-	const room = sequelize.define(
-		'room',
-		{
+	const room = sequelize.define('room',{
 			roomId: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
+				autoIncrement: true,
 			},
 		},
 		{

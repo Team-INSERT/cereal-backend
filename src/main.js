@@ -5,6 +5,7 @@ const cors = require('cors')
 const http = require('http')
 const { Server } = require('socket.io')
 const { sequelize } = require('../database/models')
+const models = require('../database/models')
 
 const app = express()
 const server = http.createServer(app)
@@ -26,11 +27,14 @@ app.use((req, res, next) => {
 })
 
 try {
-	sequelize.sync({ force: false })
+	sequelize.sync({ force: true })
 	console.log('DB Connect')
 } catch (err) {
 	console.error(err)
 }
+
+
+let waitingRoom
 
 io.on('connection', (socket) => {
 	const req = socket.request
@@ -38,8 +42,23 @@ io.on('connection', (socket) => {
 	const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 	console.log(`new client connected ip ${ip}, socket id : ${socket.id}, date : ${new Date()}`)
 
-	socket.on('join', function (data) {
-		socket.join(data)
+	socket.on('join', async (data) => {
+		if(!waitingRoom) {
+			const room = await models.room.create()
+			waitingRoom = room.dataValues.roomId
+			socket.join(waitingRoom)
+			socket.emit('join',{
+				roomId: waitingRoom,
+			})
+		}
+		else {
+			socket.join(waitingRoom)
+			socket.emit('join',{
+				roomId: waitingRoom,
+			})
+			waitingRoom = null
+		}
+
 	})
 
 	socket.on('disconnect', () => {
@@ -55,7 +74,7 @@ io.on('connection', (socket) => {
 	socket.on('message', (data) => {
 		const date = new Date()
 		date.setHours(date.getHours() + 9)
-
+		console.log(data)
 		io.to(data.roomId).emit('message', {
 			socketId: socket.id,
 			message: data.message,
