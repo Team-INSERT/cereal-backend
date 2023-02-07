@@ -33,7 +33,6 @@ try {
 	console.error(err)
 }
 
-
 let waitingRoom
 
 io.on('connection', (socket) => {
@@ -43,27 +42,24 @@ io.on('connection', (socket) => {
 	console.log(`new client connected ip ${ip}, socket id : ${socket.id}, date : ${new Date()}`)
 
 	socket.on('join', async (data) => {
-		if(!waitingRoom) {
+		if (!waitingRoom) {
 			const room = await models.room.create()
 			waitingRoom = room.dataValues.roomId
 			socket.join(waitingRoom)
-			socket.emit('join',{
-				roomId: waitingRoom,
-				wait: true
+			socket.emit('join', {
+				wait: true,
 			})
-		}
-		else {
+		} else {
 			socket.join(waitingRoom)
-			socket.emit('join',{
+			socket.emit('join', {
+				wait: true,
+			})
+			io.to(waitingRoom).emit('join', {
 				roomId: waitingRoom,
-				wait: true
+				start: true,
 			})
 			waitingRoom = null
-			socket.to(waitingRoom).emit('join',{
-				start: true
-			})
 		}
-
 	})
 
 	socket.on('disconnect', () => {
