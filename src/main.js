@@ -51,19 +51,17 @@ io.on('connection', (socket) => {
 			})
 		} else {
 			socket.join(waitingRoom)
-			if(io.sockets.adapter.rooms.get(waitingRoom).size === 1){
+			if (io.sockets.adapter.rooms.get(waitingRoom).size === 1) {
 				socket.emit('join', {
 					wait: true,
 				})
-			}else{
+			} else {
 				io.to(waitingRoom).emit('join', {
 					roomId: waitingRoom,
 					start: true,
 				})
 				waitingRoom = null
 			}
-
-
 		}
 	})
 
@@ -72,9 +70,10 @@ io.on('connection', (socket) => {
 		date.setHours(date.getHours() + 9)
 		for (const room of socket.rooms) {
 			if (room !== socket.id) {
+				console.log('logoff')
 				socket.to(room).emit('logoff', {
 					socketId: socket.id,
-					message: "상대방이 연결을 종료하였습니다",
+					message: '상대방이 연결을 종료하였습니다',
 					date: date,
 				})
 			}
@@ -100,6 +99,11 @@ io.on('connection', (socket) => {
 			message: data.message,
 			date: date,
 		})
+	})
+
+	socket.on('exit', (roomId) => {
+		console.log('dxdd')
+		io.to(roomId).emit('exit', '상대방이 연결을 종료했습니다')
 	})
 })
 
